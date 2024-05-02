@@ -1,0 +1,11 @@
+
+[
+    "cv_nom":"user:current:lastname",
+    "cv_prenom":"user:current:firstname",
+    "cv_adresse":"user:current:address",
+    "cv_ville":"user:current:city",
+    "cv_cp":"user:current:profile_field_cp",
+    "cv_tel1":"user:current:profile_phone1",
+    "cv_tel2":"user:current:profile_phone2",
+    "cv_courriel":"user:current:email"
+]

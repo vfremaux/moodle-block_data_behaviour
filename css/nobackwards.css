@@ -1,0 +1,19 @@
+
+
+/* hide all unnecessary links and buttons */
+
+.mod_quiz-prev-nav {
+    display: none !important;
+}
+
+.submitbtns-left a {
+    display: none !important;
+}
+
+div.footer-rts {
+    display: none !important;
+}
+
+div.header-rts a {
+    display: none !important;
+}
