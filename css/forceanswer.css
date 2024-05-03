@@ -1,0 +1,20 @@
+
+/* initialize to not visible state at start */
+#page-mod-quiz-attempt .mod_quiz-next-nav {
+    visibility: hidden;
+}
+
+/* put back visible in review screen */
+#page-mod-quiz-review .mod_quiz-next-nav {
+    visibility: visible;
+}
+
+/* masks radio buttobs till amd is here */
+#responseform input[type=radio] {
+    visibility: hidden;
+}
+
+#responseform input[type=radio] + label {
+    pointer-events:none;
+}
+

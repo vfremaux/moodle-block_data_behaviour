@@ -1,0 +1,25 @@
+
+
+.data-commands {
+    margin-top: 10px;
+}
+
+.data-commands * {
+    display: inline;
+}
+
+.format-page-data-list-userselect {
+    margin: 10px;
+}
+
+.records-info {
+    margin-top: 20px;
+    padding:5px;
+    background-color: #eee;
+    border-radius: 5px;
+    border: 1px #ddd solid;
+}
+
+body.no-settings .block_settings{
+    display:none;
+}
