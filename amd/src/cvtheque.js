@@ -268,8 +268,8 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
 
             fieldsetelm = that.closest('.multiple-fieldset');
 
-            if (fieldsetelm.hasClass('set-first')) {
-                // Empty everything in element.
+            // if (fieldsetelm.hasClass('set-first')) {
+                // Empty everything in the deleted element.
                 $('input[type="text"]', fieldsetelm).val(null);
                 $('textarea', fieldsetelm).val(null);
                 $('input[type="select"]', fieldsetelm).val(null);
@@ -284,7 +284,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
 
                 // Disable the add more button.
                 cvtheque.disable_add_one_more(fselm, fsix);
-            } else {
+            //} else {
                 nextfsix = fsix + 1;
                 nextjqfieldset = fieldsetelm.next();
                 loopctl = false;
@@ -370,7 +370,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
                         jqfieldsetelm = nextjqfieldset;
                         nextjqfieldset = $('.multiple-fieldset[data-fs="' + fselm + '"][data-fsix="' + nextfsix + '"]');
                     }
-                }
+                // }
             }
 
         },
