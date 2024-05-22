@@ -399,3 +399,4 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
 
     return cvtheque;
 });
+
