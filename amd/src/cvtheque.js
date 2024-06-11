@@ -16,8 +16,8 @@
 /**
  * Javascript controller for controlling the sections.
  *
- * @module     block_multicourse_navigation/collapse_control
- * @package    block_multicourse_navigation
+ * @module     block_data_behaviour/cvtheque_control
+ * @package    block_data_behaviour
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
@@ -85,7 +85,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
 
                 // Initiate status color
                 let publishedstate = $('#cv_state-value input[value*="Pub"]').is(':checked');
-                let draftstate = $('#cv_state-value input[value*="Brou"]').is(':checked');
+                // let draftstate = $('#cv_state-value input[value*="Brou"]').is(':checked');
                 if (publishedstate) {
                     $('#cv_state-value').addClass('published');
                 } else {
@@ -110,7 +110,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
             }
         },
 
-        // Check fieldset empty state and show relevant info
+        // Check fieldset empty state and show relevant info.
         check_all_fieldsets: function () {
             var fieldsetelm, fselm;
 
@@ -120,11 +120,11 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
                     fieldsetelm = $(this).closest('.multiple-fieldset');
                     fselm = fieldsetelm.attr('data-fs');
 
-                    // hide set-empty of the set.
+                    // Hide set-empty of the set.
                     log.debug('Hiding empty signal on fieldset[data-fs="' + fselm + '"][data-fsix="0"]');
                     $('fieldset[data-fs="' + fselm + '"][data-fsix="0"]').addClass('set-hidden');
 
-                    // show this fieldset
+                    // Show this fieldset.
                     fieldsetelm.removeClass('set-hidden');
                 }
             });
@@ -137,7 +137,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
             e.preventDefault();
 
             var that, fieldsetelm, fselm, fsix, fieldsetinputs, fieldsetselects, fieldsettextareas, masterinput;
-            var isfile, isempty, filemanagerelm, filehiddenfieldelm;
+            var isfile, isempty, filehiddenfieldelm;
 
             that = $(this);
 
@@ -156,13 +156,12 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
 
             isfile = that.children('.filemanager').length > 0;
             if (isfile) {
-                filemanagerelm = that.children('.filemanager');
                 log.debug("AMD Cvtheque : isfile ? " + isfile);
                 // Direct testing is not possible as file manager is not yet loaded.
                 // isempty = filemanagerelm.hasClass('fm-nofiles');
                 // so test by ajax.
                 filehiddenfieldelm = fieldsetelm.find('input[type="hidden"]').first();
-                url = cfg.wwwroot + '/blocks/data_behaviour/ajax/service.php';
+                var url = cfg.wwwroot + '/blocks/data_behaviour/ajax/service.php';
                 url += '?what=checkfilearea';
                 url += '&filearea=draft&itemid=' + filehiddenfieldelm.val();
                 $.ajax(url, {
@@ -229,7 +228,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
             e.stopPropagation();
             e.preventDefault();
 
-            var that, fselm, fsix;
+            var that, fselm, fsix, prevfsix, fieldsetelm, fieldsetinputs, fieldsetselects, fieldsettextareas;
             that = $(this);
 
             fieldsetelm = that.closest('.multiple-fieldset');
@@ -251,32 +250,32 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
 
         /**
          * Synopsys : if first element of a set (set-first), than empty all set inputs, but keep the form visible.
-         * if not first, If next set is hidden (empty) or does not exist (last), empty values and hide. If next set is shown, copy all values
-         * in current, and iterate to next.
+         * if not first, If next set is hidden (empty) or does not exist (last), empty values and hide. If next set
+         * is shown, copy all values in current, and iterate to next.
          */
         delete_fieldset: function (e) {
 
             e.stopPropagation();
             e.preventDefault();
 
-            var that, fselm, fsix, fieldsetelm, loopctl, nextfsix, nextjqfieldset;
+            var that, fselm, fsix, jqfieldsetelm, loopctl, nextfsix, nextjqfieldset, textareaelm;
             that = $(this);
             fselm = that.attr('data-fs');
             fsix = that.attr('data-fsix');
 
             log.debug("AMD Cvtheque deleting/emptying : " + fselm + ':' + fsix + " !");
 
-            fieldsetelm = that.closest('.multiple-fieldset');
+            jqfieldsetelm = that.closest('.multiple-fieldset');
 
             // Empty everything in the deleted element.
-            $('input[type="text"]', fieldsetelm).val(null);
-            $('textarea', fieldsetelm).val(null);
-            $('input[type="select"]', fieldsetelm).val(null);
-            $('input[type="checkbox"]', fieldsetelm).attr('checked', null);
-            $('input[type="radio"]', fieldsetelm).attr('checked', null);
+            $('input[type="text"]', jqfieldsetelm).val(null);
+            $('textarea', jqfieldsetelm).val(null);
+            $('input[type="select"]', jqfieldsetelm).val(null);
+            $('input[type="checkbox"]', jqfieldsetelm).attr('checked', null);
+            $('input[type="radio"]', jqfieldsetelm).attr('checked', null);
 
             // Additional cleaning if a textarea is a whisiwhyg
-            let textareaelm = $('input[type="textarea"]', fieldsetelm).first();
+            textareaelm = $('input[type="textarea"]', jqfieldsetelm).first();
             if (textareaelm !== undefined) {
                 $('#' + textareaelm.attr('id') + 'editable').html('');
             }
@@ -285,83 +284,46 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
             cvtheque.disable_add_one_more(fselm, fsix);
 
             nextfsix = fsix + 1;
-            nextjqfieldset = fieldsetelm.next();
-            loopctl = false;
+            nextjqfieldset = jqfieldsetelm.next();
+            if (nextjqfieldset != undefined) {
+                loopctl = true;
+            }
             while (loopctl) {
                 if (nextjqfieldset.length == 0) {
-                    // jqfieldset was the last one.
-                    $('input[type="text"]', fieldsetelm).val(null);
-                    $('textarea', fieldsetelm).val(null);
-                    $('input[type="select"]', fieldsetelm).val(null);
-                    $('input[type="checkbox"]', fieldsetelm).attr('checked', null);
-                    $('input[type="radio"]', fieldsetelm).attr('checked', null);
-                    fieldsetelm.toggleClass('set-hidden');
+                    // jqfieldset was the last one. so empty values.
+                    $('input[type="text"]', jqfieldsetelm).val(null);
+                    $('textarea', jqfieldsetelm).val(null);
+                    $('input[type="select"]', jqfieldsetelm).val(null);
+                    $('input[type="checkbox"]', jqfieldsetelm).attr('checked', null);
+                    $('input[type="radio"]', jqfieldsetelm).attr('checked', null);
+                    jqfieldsetelm.toggleClass('set-hidden');
 
                     // Additional cleaning if a textarea is a whisiwhyg
-                    let textareaelm = $('input[type="textarea"]', fieldsetelm).first();
+                    textareaelm = $('input[type="textarea"]', jqfieldsetelm).first();
                     if (textareaelm !== undefined) {
                         $('#' + textareaelm.attr('id') + 'editable').html('');
                     }
 
                     // Allow adding one more to previous item
                     cvtheque.enable_add_one_more(fselm, nextfsix - 2);
+                    // Stop processing.
+                    loopctl = false;
 
                 } else {
                     // Next exists but might be empty or not
                     if (nextjqfieldset.hasClass('set-hidden')) {
                         // Next is empty (should be).
-                        jqfieldset.toggleClass('set-hidden');
+                        jqfieldsetelm.toggleClass('set-hidden');
 
                         // Allow adding one more to previous item
                         cvtheque.enable_add_one_more(fselm, nextfsix - 2);
                     } else {
                         // Next is not empty. We need copy values.
-                        $('input[type="text"]', nextjqfieldset).each(function() {
-                            let inputname = $(this).attr('name');
-                            let inputvalue = $(this).val();
-                            let lastfsix = nextfsix - 1;
-                            inputname.replace(/\\d+$/, '');
-                            inputname += lastfsix;
-                            $('input[name="' + inputname + '"]', jqfieldsetelm).val(inputvalue);
-                        });
-                        $('textarea', nextjqfieldset).each(function() {
-                            let inputname = $(this).attr('name');
-                            let inputvalue = $(this).val();
-                            let inputid = $(this).attr('id');
-                            let lastfsix = nextfsix - 1;
-                            inputname.replace(/\\d+$/, '');
-                            inputname += lastfsix;
-                            $('textarea[name="' + inputname + '"]', jqfieldsetelm).val(inputvalue);
-
-                            // Additional cleaning if a textarea is a whisiwhyg
-                            let targetareaid = $('textarea[name="' + inputname + '"]', jqfieldsetelm).first().attr('id');
-                            $('#' + targetareaid + 'editable').html(inputValue);
-
-                        });
-                        $('input[type="select"]', nextjqfieldset).each(function() {
-                            let inputname = $(this).attr('name');
-                            let inputvalue = $(this).val();
-                            let lastfsix = nextfsix - 1;
-                            inputname.replace(/\\d+$/, '');
-                            inputname += lastfsix;
-                            $('input[name="' + inputname + '"]', jqfieldsetelm).val(inputvalue);
-                        });
-                        $('input[type="checkbox"]', nextjqfieldset).each(function() {
-                            let inputname = $(this).attr('name');
-                            let inputchecked = $(this).attr('checked');
-                            let lastfsix = nextfsix - 1;
-                            inputname.replace(/\\d+$/, '');
-                            inputname += lastfsix;
-                            $('input[name="' + inputname + '"]', jqfieldsetelm).attr('checked', inputchecked);
-                        });
-                        $('input[type="radio"]', nextjqfieldset).each(function() {
-                            let inputname = $(this).attr('name');
-                            let inputchecked = $(this).attr('checked');
-                            let lastfsix = nextfsix - 1;
-                            inputname.replace(/\\d+$/, '');
-                            inputname += lastfsix;
-                            $('input[name="' + inputname + '"]', jqfieldsetelm).attr('checked', inputchecked);
-                        });
+                        $('input[type="text"]', nextjqfieldset).each(cvtheque.copy_text(jqfieldsetelm, nextfsix));
+                        $('textarea', nextjqfieldset).each(cvtheque.copy_textarea(jqfieldsetelm, nextfsix));
+                        $('input[type="select"]', nextjqfieldset).each(cvtheque.copy_select(jqfieldsetelm, nextfsix));
+                        $('input[type="checkbox"]', nextjqfieldset).each(cvtheque.copy_check(jqfieldsetelm, nextfsix));
+                        $('input[type="radio"]', nextjqfieldset).each(cvtheque.copy_radio(jqfieldsetelm, nextfsix));
                         jqfieldsetelm.toggleClass('set-hidden');
                         cvtheque.disable_add_one_more(fselm, fsix);
                     }
@@ -372,12 +334,67 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
             }
         },
 
+        copy_text: function(jqfieldsetelm, nextfsix) {
+            var inputname = $(this).attr('name');
+            var inputvalue = $(this).val();
+            var lastfsix = nextfsix - 1;
+            inputname.replace(/\\d+$/, '');
+            inputname += lastfsix;
+            $('input[name="' + inputname + '"]', jqfieldsetelm).val(inputvalue);
+        },
+
+        copy_textarea: function(jqfieldsetelm, nextfsix) {
+            var inputname = $(this).attr('name');
+            var inputvalue = $(this).val();
+            var inputid = $(this).attr('id');
+            var lastfsix = nextfsix - 1;
+            inputname.replace(/\\d+$/, '');
+            inputname += lastfsix;
+            $('textarea[name="' + inputname + '"]', jqfieldsetelm).val(inputvalue);
+
+            // Additional cleaning if a textarea is a whisiwhyg
+            var targetareaid = $('textarea[name="' + inputname + '"]', jqfieldsetelm).first().attr('id');
+            $('#' + targetareaid + 'editable').html(inputvalue);
+
+        },
+
+        copy_select: function(jqfieldsetelm, nextfsix) {
+            var inputname = $(this).attr('name');
+            var inputvalue = $(this).val();
+            var lastfsix = nextfsix - 1;
+            inputname.replace(/\\d+$/, '');
+            inputname += lastfsix;
+            $('input[name="' + inputname + '"]', jqfieldsetelm).val(inputvalue);
+        },
+
+        copy_check: function(jqfieldsetelm, nextfsix) {
+            var inputname = $(this).attr('name');
+            var inputchecked = $(this).attr('checked');
+            var lastfsix = nextfsix - 1;
+            inputname.replace(/\\d+$/, '');
+            inputname += lastfsix;
+            $('input[name="' + inputname + '"]', jqfieldsetelm).attr('checked', inputchecked);
+        },
+
+        copy_radio: function(jqfieldsetelm, nextfsix) {
+            var inputname = $(this).attr('name');
+            var inputchecked = $(this).attr('checked');
+            var lastfsix = nextfsix - 1;
+            inputname.replace(/\\d+$/, '');
+            inputname += lastfsix;
+            $('input[name="' + inputname + '"]', jqfieldsetelm).attr('checked', inputchecked);
+        },
+
         publish: function(e) {
+            e.stopPropagation();
+            e.preventDefault();
             $('#cv_state-value').removeClass('draft');
             $('#cv_state-value').addClass('published');
         },
 
         unpublish: function(e) {
+            e.stopPropagation();
+            e.preventDefault();
             $('#cv_state-value').removeClass('published');
             $('#cv_state-value').addClass('draft');
         },

@@ -103,11 +103,12 @@ class block_data_behaviour extends block_base {
         $currentrecordid = optional_param('rid', 0, PARAM_INT);
 
         foreach ($datas as $d) {
+        	// This is a special requirement for the 'cvtheque' project (purplecampus.com)
             if ($manager->has_tag($d->id, 'cvtheque')) {
-                debug_trace("CVTheque detected in {$d->id} ", TRACE_DEBUG);
+                if (function_exists('debug_trace')) debug_trace("CVTheque detected in {$d->id} ", TRACE_DEBUG);
 
                 // Get recordid info if available.
-                // debug_trace("$currentdataid {$d->id} $currentmode", TRACE_DEBUG);
+                // if (function_exists('debug_trace'))  debug_trace("$currentdataid {$d->id} $currentmode", TRACE_DEBUG);
                 if ((!empty($currentdataid) && ($d->id == $currentdataid) && ($currentmode == 'single')) ||
                     !empty($currentrecordid)) {
                     if ($currentrecordid == 0) {
@@ -129,12 +130,12 @@ class block_data_behaviour extends block_base {
                     $params->courseid = $COURSE->id;
                     $params->dataid = $currentdataid;
                     $params->recordid = $currentrecordid;
-                    // debug_trace("CVTheque pluging AMD ", TRACE_DEBUG);
+                    // if (function_exists('debug_trace')) debug_trace("CVTheque pluging AMD ", TRACE_DEBUG);
                     $PAGE->requires->js_call_amd('block_data_behaviour/cvtheque', 'init', [$params]);
                     return;
                 }
             } else {
-                debug_trace("CVTheque missed in {$d->id} ", TRACE_DEBUG);
+                if (function_exists('debug_trace')) debug_trace("CVTheque missed in {$d->id} ", TRACE_DEBUG);
             }
         }
     }
