@@ -281,8 +281,10 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
                 $('#' + textareaelm.attr('id') + 'editable').html('');
             }
 
+            nextfsix = 0 + parseInt(fsix) + 1; // force arithmetic.
+
             // Disable the add more button and the delete.
-            cvtheque.disable_add_one_more(fselm, fsix);
+            cvtheque.disable_add_one_more(fselm, nextfsix);
             cvtheque.disable_delete(fselm, fsix);
 
             nextfsix = 0 + parseInt(fsix) + 1; // force arithmetic.
@@ -295,7 +297,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
             while (loopctl) {
                 log.debug("AMD Cvtheque processing : " + fselm + ':' + nextfsix + " !");
                 log.debug("AMD Cvtheque previous : " + fselm + ':' + jqfieldsetelm.attr('data-fsix') + " !");
-                if (nextjqfieldset.length == 0) {
+                if (nextjqfieldset == undefined || nextjqfieldset.length == 0) {
                     log.debug("AMD Cvtheque found " + fselm + ':' + (0 + parseInt(nextfsix) - 1) + " was last one !");
                     jqfieldsetelm.toggleClass('set-hidden');
                     // Empty everything in the last element.
