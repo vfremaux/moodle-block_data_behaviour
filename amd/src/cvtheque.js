@@ -196,6 +196,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
 
         /*
          * Potentially on all master input field whose null value tells it is empty.
+         * Be carefull that add_more adresses the next index in fsix.
          */
         enable_add_one_more: function (fselm, fsix) {
             log.debug("AMD Cvtheque Enabling add one more : " + fselm + ':' + fsix + " !");
@@ -355,7 +356,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
                         for (i = 0; i < radios.length ; i++) {
                             cvtheque.copy_radio(radios[i], jqfieldsetelm, nextfsix);
                         }
-                        cvtheque.enable_add_one_more(fselm, nextfsix - 1);
+                        cvtheque.enable_add_one_more(fselm, nextfsix);
                         cvtheque.enable_delete(fselm, nextfsix - 1);
                     }
 
