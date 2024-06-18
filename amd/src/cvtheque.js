@@ -298,6 +298,12 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
                 if (nextjqfieldset.length == 0) {
                     log.debug("AMD Cvtheque found " + fselm + ':' + (0 + parseInt(nextfsix) - 1) + " was last one !");
                     jqfieldsetelm.toggleClass('set-hidden');
+                    // Empty everything in the last element.
+                    $('input[type="text"]', jqfieldsetelm).val(null);
+                    $('textarea', jqfieldsetelm).html(null);
+                    $('select', jqfieldsetelm).val(null);
+                    $('input[type="checkbox"]', jqfieldsetelm).attr('checked', null);
+                    $('input[type="radio"]', jqfieldsetelm).attr('checked', null);
 
                     // Additional cleaning if a textarea is a whisiwhyg
                     textareaelm = $('input[type="textarea"]', jqfieldsetelm).first();
@@ -306,9 +312,9 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
                     }
 
                     // Allow adding one more to previous item
-                    cvtheque.disable_add_one_more(fselm, nextfsix - 1);
+                    cvtheque.disable_add_one_more(fselm, nextfsix);
                     cvtheque.disable_delete(fselm, nextfsix - 1);
-                    cvtheque.enable_add_one_more(fselm, nextfsix - 2);
+                    cvtheque.enable_add_one_more(fselm, nextfsix - 1);
                     // Stop processing.
                     loopctl = false;
 
@@ -326,9 +332,9 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
                         $('input[type="radio"]', jqfieldsetelm).prop('checked', null);
 
                         // Allow adding one more to previous item
-                        cvtheque.disable_add_one_more(fselm, nextfsix);
                         cvtheque.disable_add_one_more(fselm, nextfsix - 1);
-                        cvtheque.enable_add_one_more(fselm, nextfsix - 2);
+                        cvtheque.disable_add_one_more(fselm, nextfsix - 2);
+                        cvtheque.enable_add_one_more(fselm, nextfsix);
                     } else {
                         log.debug("AMD Cvtheque copy to n-1 !");
                         // Next is not empty. We need copy values.
