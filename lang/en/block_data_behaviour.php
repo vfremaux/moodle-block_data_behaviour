@@ -35,4 +35,5 @@ $string['nosearch'] = 'No search';
 $string['nosingle'] = 'No single';
 $string['notabs'] = 'Simplify tabs';
 $string['noadmin'] = 'No admin';
+$string['tags'] = 'Behaviour tags';
 $string['youhave'] = '<p>You have {$a} databases in this course.</p>';

@@ -47,6 +47,9 @@ class block_data_behaviour_edit_form extends block_edit_form {
 
             $mform->addElement('advcheckbox', 'config_noadmin'.$d->id, get_string('noadmin', 'block_data_behaviour'));
 
+            $mform->addElement('text', 'config_behaviourtags'.$d->id, get_string('tags', 'block_data_behaviour'));
+            $mform->setType('config_behaviourtags'.$d->id, PARAM_TEXT);
+
         }
     }
 }

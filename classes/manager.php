@@ -71,6 +71,9 @@ class manager {
         return null;
     }
 
+    /**
+     * Get all databases in the current course.
+     */
     public function get_datas() {
         global $DB, $COURSE;
 
@@ -103,5 +106,32 @@ class manager {
         }
 
         // Silently answer false in any negative case.
+    }
+
+    /**
+     * Checks a behaviour tag against an activity instance.
+     * @param int $did a data activity id
+     * @param string $behaviour a behaviour name
+     */
+    public function has_tag($did, $behaviourtag) {
+        global $DB, $CFG;
+
+        if (!$DB->record_exists('data', array('id' => $did))) {
+            if ($CFG->debug == DEBUG_DEVELOPER) {
+                // TODO : auto cleanup of the deleted instances.
+                throw moodle_exception("Invalid data. May be deleted");
+            }
+            return false;
+        }
+
+        if (empty($this->blockinstance)) {
+            return false;
+        }
+
+        $key = 'behaviourtags'.$did;
+        if (preg_match('/\\b'.$behaviourtag.'\\b/', $this->blockinstance->config->$key)) {
+            // returns true if the instance is tagged.
+            return true;
+        }
     }
 }
