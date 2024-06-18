@@ -37,9 +37,7 @@ $filter = optional_param('filter', 0, PARAM_BOOL);
 // search filter will only be applied when $filter is true
 
 $edit = optional_param('edit', -1, PARAM_BOOL);
-// CHANGE+.
-$page = optional_param('datapage', 0, PARAM_INT);
-// CHANGE-.
+$page = optional_param('page', 0, PARAM_INT);
 
 /// These can be added to perform an action on a record
 $approve = optional_param('approve', 0, PARAM_INT);    //approval recordid
