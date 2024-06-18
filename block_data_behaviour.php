@@ -23,6 +23,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 require_once($CFG->dirroot.'/blocks/data_behaviour/classes/manager.php');
+require_once($CFG->dirroot.'/mod/data/locallib.php');
 
 /**
  * Block Quiz Behaviour.
@@ -89,18 +90,53 @@ class block_data_behaviour extends block_base {
      * Thi is absolutely NOT a full secure solution, just ennoying dummy users.
      */
     public function get_required_javascript() {
-        global $PAGE, $COURSE;
-
-        $coursecontext = context_course::instance($COURSE->id);
-        if (has_capability('moodle/course:manageactivities', $coursecontext)) {
-            return;
-        }
+        global $PAGE, $COURSE, $DB;
 
         $manager = \block_data_behaviour\manager::instance();
 
         $PAGE->requires->jquery();
         $datas = $manager->get_datas();
+
+        $currentdataid = optional_param('d', 0, PARAM_INT);
+        $currentpage = optional_param('page', 0, PARAM_INT);
+        $currentmode = optional_param('mode', 'single', PARAM_TEXT);
+        $currentrecordid = optional_param('rid', 0, PARAM_INT);
+
         foreach ($datas as $d) {
+        	// This is a special requirement for the 'cvtheque' project (purplecampus.com)
+            if ($manager->has_tag($d->id, 'cvtheque')) {
+                if (function_exists('debug_trace')) debug_trace("CVTheque detected in {$d->id} ", TRACE_DEBUG);
+
+                // Get recordid info if available.
+                // if (function_exists('debug_trace'))  debug_trace("$currentdataid {$d->id} $currentmode", TRACE_DEBUG);
+                if ((!empty($currentdataid) && ($d->id == $currentdataid) && ($currentmode == 'single')) ||
+                    !empty($currentrecordid)) {
+                    if ($currentrecordid == 0) {
+                        $currentdata = $DB->get_record('data', ['id' => $currentdataid]);
+                        $perpage = 1;
+                        $cm = get_coursemodule_from_instance('data', $currentdataid);
+                        $context = context_module::instance($cm->id);
+                        $currentgroup = groups_get_course_group($COURSE);
+                        list($records, $maxcount, $totalcount, $page, $nowperpage, $sort, $currentmode) =
+                            data_search_entries($currentdata, $cm, $context, 'single', $currentgroup, '', '', '', $currentpage, $perpage, '', [], null);
+                        // We must find one or there is no records in this DB.
+                        if (!empty($records)) {
+                            $record = array_shift($records);
+                            $currentrecordid = $record->id;
+                        }
+                    }
+
+                    $params = new StdClass;
+                    $params->courseid = $COURSE->id;
+                    $params->dataid = $currentdataid;
+                    $params->recordid = $currentrecordid;
+                    // if (function_exists('debug_trace')) debug_trace("CVTheque pluging AMD ", TRACE_DEBUG);
+                    $PAGE->requires->js_call_amd('block_data_behaviour/cvtheque', 'init', [$params]);
+                    return;
+                }
+            } else {
+                if (function_exists('debug_trace')) debug_trace("CVTheque missed in {$d->id} ", TRACE_DEBUG);
+            }
         }
     }
 

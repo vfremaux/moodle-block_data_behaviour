@@ -34,4 +34,5 @@ $string['nosearch'] = 'Masquer la recherche de fiches';
 $string['nosingle'] = 'Masquer l\'affichage individuel de fiche';
 $string['notabs'] = 'Simplifier les onglets';
 $string['noadmin'] = 'Masquer l\'administration';
+$string['tags'] = 'Tags comportementaux';
 $string['youhave'] = '<p> Vous avez {$a} bases de données dans ce cours</p>';

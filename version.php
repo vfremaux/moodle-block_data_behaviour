@@ -24,12 +24,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2018111200;
+$plugin->version   = 2023101100;
 $plugin->requires  = 2022112801;
 $plugin->maturity = MATURITY_RC;
-$plugin->release  = "4.1.0 (Build 2018111200)";
+$plugin->release  = "4.1.0 (Build 2023101100)";
 $plugin->component = 'block_data_behaviour';
 $plugin->supported = [401, 402];
 
 // Non moodle attributes.
-$plugin->codeincrement = '4.1.0000';
+$plugin->codeincrement = '4.1.0001';
