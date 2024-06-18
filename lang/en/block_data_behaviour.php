@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['data_behaviour:addinstance'] = 'Add a Quiz Behaviour block';
+$string['privacy:metadata'] = "The Data Behaviour block do not hold any data belonging to users.";
 
 $string['directreturn'] = 'Direct return';
 $string['help'] = 'Just edit this block to change behaviour of the data activities in the course.';

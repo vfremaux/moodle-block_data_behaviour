@@ -133,5 +133,15 @@ class manager {
             // returns true if the instance is tagged.
             return true;
         }
+        return false;
+    }
+
+    public function is_powered_user($cm) {
+        global $USER, $COURSE;
+
+        $context = context_module::instance($cm->id);
+        if (!has_capability('mod/data:rate', $context)) {
+            return true;
+        }
     }
 }

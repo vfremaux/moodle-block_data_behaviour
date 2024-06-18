@@ -25,6 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['data_behaviour:addinstance'] = 'Add a Data Module Behaviour block';
+$string['privacy:metadata'] = "Le bloc Comportement de Base de données ne détient aucune donnée appartenent à des utilisateurs .";
 
 $string['help'] = 'Editez ce bloc pour activer les changements de comportement non standard de l\'activité Base de données dans le cours.';
 $string['databehaviourconfig'] = 'Comportement des bases de données';

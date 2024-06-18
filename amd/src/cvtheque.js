@@ -16,8 +16,8 @@
 /**
  * Javascript controller for controlling the sections.
  *
- * @module     block_multicourse_navigation/collapse_control
- * @package    block_multicourse_navigation
+ * @module     block_data_behaviour/cvtheque_control
+ * @package    block_data_behaviour
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 // jshint unused: true, undef:true
@@ -258,7 +258,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
             e.stopPropagation();
             e.preventDefault();
 
-            var that, fselm, fsix, jqfieldsetelm, loopctl, nextfsix, nextjqfieldset, textareaelm;
+            var that, fselm, fsix, jqfieldsetelm, loopctl, nextfsix, nextjqfieldset, textareaelm, i;
             that = $(this);
             fselm = that.attr('data-fs');
             fsix = that.attr('data-fsix');
@@ -269,8 +269,8 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
 
             // Empty everything in the deleted element.
             $('input[type="text"]', jqfieldsetelm).val(null);
-            $('textarea', jqfieldsetelm).val(null);
-            $('input[type="select"]', jqfieldsetelm).val(null);
+            $('textarea', jqfieldsetelm).html(null);
+            $('select', jqfieldsetelm).val(null);
             $('input[type="checkbox"]', jqfieldsetelm).attr('checked', null);
             $('input[type="radio"]', jqfieldsetelm).attr('checked', null);
 
@@ -280,22 +280,22 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
                 $('#' + textareaelm.attr('id') + 'editable').html('');
             }
 
-            // Disable the add more button.
+            // Disable the add more button and the delete.
             cvtheque.disable_add_one_more(fselm, fsix);
+            cvtheque.disable_delete(fselm, fsix);
 
-            nextfsix = fsix + 1;
+            nextfsix = 0 + parseInt(fsix) + 1; // force arithmetic.
             nextjqfieldset = jqfieldsetelm.next();
             if (nextjqfieldset != undefined) {
                 loopctl = true;
+            } else {
+                log.debug("AMD Cvtheque finding no more elements : " + fselm + ':' + nextfsix + " !");
             }
             while (loopctl) {
+                log.debug("AMD Cvtheque processing : " + fselm + ':' + nextfsix + " !");
+                log.debug("AMD Cvtheque previous : " + fselm + ':' + jqfieldsetelm.attr('data-fsix') + " !");
                 if (nextjqfieldset.length == 0) {
-                    // jqfieldset was the last one. so empty values.
-                    $('input[type="text"]', jqfieldsetelm).val(null);
-                    $('textarea', jqfieldsetelm).val(null);
-                    $('input[type="select"]', jqfieldsetelm).val(null);
-                    $('input[type="checkbox"]', jqfieldsetelm).attr('checked', null);
-                    $('input[type="radio"]', jqfieldsetelm).attr('checked', null);
+                    log.debug("AMD Cvtheque found " + fselm + ':' + (0 + parseInt(nextfsix) - 1) + " was last one !");
                     jqfieldsetelm.toggleClass('set-hidden');
 
                     // Additional cleaning if a textarea is a whisiwhyg
@@ -305,84 +305,167 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
                     }
 
                     // Allow adding one more to previous item
+                    cvtheque.disable_add_one_more(fselm, nextfsix - 1);
+                    cvtheque.disable_delete(fselm, nextfsix - 1);
                     cvtheque.enable_add_one_more(fselm, nextfsix - 2);
                     // Stop processing.
                     loopctl = false;
 
                 } else {
+                    log.debug("AMD Cvtheque current : " + fselm + ':' + nextjqfieldset.attr('data-fsix') + " !");
                     // Next exists but might be empty or not
                     if (nextjqfieldset.hasClass('set-hidden')) {
-                        // Next is empty (should be).
+                        log.debug("AMD Cvtheque current was hidden (empty), so hide the previous");
                         jqfieldsetelm.toggleClass('set-hidden');
+                        // Ensure previous turns back empty.
+                        $('input[type="text"]', jqfieldsetelm).val(null);
+                        $('textarea', jqfieldsetelm).html(null);
+                        $('select', jqfieldsetelm).val(null);
+                        $('input[type="checkbox"]', jqfieldsetelm).attr('checked', null);
+                        $('input[type="radio"]', jqfieldsetelm).prop('checked', null);
 
                         // Allow adding one more to previous item
+                        cvtheque.disable_add_one_more(fselm, nextfsix);
+                        cvtheque.disable_add_one_more(fselm, nextfsix - 1);
                         cvtheque.enable_add_one_more(fselm, nextfsix - 2);
                     } else {
+                        log.debug("AMD Cvtheque copy to n-1 !");
                         // Next is not empty. We need copy values.
-                        $('input[type="text"]', nextjqfieldset).each(cvtheque.copy_text(jqfieldsetelm, nextfsix));
-                        $('textarea', nextjqfieldset).each(cvtheque.copy_textarea(jqfieldsetelm, nextfsix));
-                        $('input[type="select"]', nextjqfieldset).each(cvtheque.copy_select(jqfieldsetelm, nextfsix));
-                        $('input[type="checkbox"]', nextjqfieldset).each(cvtheque.copy_check(jqfieldsetelm, nextfsix));
-                        $('input[type="radio"]', nextjqfieldset).each(cvtheque.copy_radio(jqfieldsetelm, nextfsix));
-                        jqfieldsetelm.toggleClass('set-hidden');
-                        cvtheque.disable_add_one_more(fselm, fsix);
+                        var textinputs = $('input[type="text"]', nextjqfieldset);
+                        for (i = 0; i < textinputs.length ; i++) {
+                            cvtheque.copy_text(textinputs[i], jqfieldsetelm, nextfsix);
+                        }
+
+                        var textareas = $('textarea', nextjqfieldset);
+                        for (i = 0; i < textareas.length ; i++) {
+                            cvtheque.copy_textarea(textareas[i], jqfieldsetelm, nextfsix);
+                        }
+
+                        var selects = $('select', nextjqfieldset);
+                        for (i = 0; i < selects.length ; i++) {
+                            cvtheque.copy_select(selects[i], jqfieldsetelm, nextfsix);
+                        }
+
+                        var checkboxes = $('input[type="checkbox"]', nextjqfieldset);
+                        for (i = 0; i < checkboxes.length ; i++) {
+                            cvtheque.copy_check(checkboxes[i], jqfieldsetelm, nextfsix);
+                        }
+
+                        var radios = $('input[type="radio"]', nextjqfieldset);
+                        for (i = 0; i < radios.length ; i++) {
+                            cvtheque.copy_radio(radios[i], jqfieldsetelm, nextfsix);
+                        }
                     }
-                    nextfsix = nextfsix + 1;
+
+                    nextfsix = 0 + parseInt(nextfsix) + 1; // force arithmetic.
                     jqfieldsetelm = nextjqfieldset;
                     nextjqfieldset = $('.multiple-fieldset[data-fs="' + fselm + '"][data-fsix="' + nextfsix + '"]');
                 }
             }
         },
 
-        copy_text: function(jqfieldsetelm, nextfsix) {
-            var inputname = $(this).attr('name');
-            var inputvalue = $(this).val();
-            var lastfsix = nextfsix - 1;
-            inputname.replace(/\\d+$/, '');
-            inputname += lastfsix;
-            $('input[name="' + inputname + '"]', jqfieldsetelm).val(inputvalue);
+        /*
+         * element is the element to copy
+         * Copy path : As mod_data hides how the input element is done, we need to
+         * So we need to : climb up to TD element, shift to n-1 TD element and drop
+         * back to the input. TD ids chain with the datafield shortname + fsix.
+         */
+        copy_text: function(element, jqfieldsetelm, nextfsix) {
+            var tdid = $(element).closest('td').attr('id');
+            log.debug("Selecting value in element name " + $(element).attr('name'));
+            var inputvalue = $(element).val();
+            log.debug("Input value is " + inputvalue);
+
+            // Find target
+            var lastfsix = 0 + parseInt(nextfsix) - 1;
+            tdid = tdid.replace(/[0-9]+$/, '');
+            var lasttdid = tdid + lastfsix;
+            var targetinput = $('#' + lasttdid + ' input[type="text"]');
+            log.debug("Transfering value '" + inputvalue + "' to element name " +
+                    targetinput.attr('name') + ' in td of id ' + lasttdid);
+            targetinput.val(inputvalue);
         },
 
-        copy_textarea: function(jqfieldsetelm, nextfsix) {
-            var inputname = $(this).attr('name');
-            var inputvalue = $(this).val();
-            var inputid = $(this).attr('id');
-            var lastfsix = nextfsix - 1;
-            inputname.replace(/\\d+$/, '');
-            inputname += lastfsix;
-            $('textarea[name="' + inputname + '"]', jqfieldsetelm).val(inputvalue);
+        copy_textarea: function(element, jqfieldsetelm, nextfsix) {
+            var tdid = $(element).closest('td').attr('id');
+            log.debug("Selecting value in element name " + $(element).attr('name'));
+            var inputvalue = $(element).val();
+            log.debug("Input value is " + inputvalue);
+
+            var lastfsix = 0 + parseInt(nextfsix) - 1;
+            tdid = tdid.replace(/[0-9]+$/, '');
+            var lasttdid = tdid + lastfsix;
+            var targetinput = $('#' + lasttdid + ' textarea');
+            targetinput.val(inputvalue);
 
             // Additional cleaning if a textarea is a whisiwhyg
-            var targetareaid = $('textarea[name="' + inputname + '"]', jqfieldsetelm).first().attr('id');
+            var targetareaid = targetinput.attr('id');
             $('#' + targetareaid + 'editable').html(inputvalue);
-
         },
 
-        copy_select: function(jqfieldsetelm, nextfsix) {
-            var inputname = $(this).attr('name');
-            var inputvalue = $(this).val();
-            var lastfsix = nextfsix - 1;
-            inputname.replace(/\\d+$/, '');
-            inputname += lastfsix;
-            $('input[name="' + inputname + '"]', jqfieldsetelm).val(inputvalue);
+        /**
+         * Special care to date selects that are three combined selects with _day, _month, _year extensions.
+         */
+        copy_select: function(element, jqfieldsetelm, nextfsix) {
+            var td = $(element).closest('td');
+            var tdid = td.attr('id');
+            if (!td.hasClass('is-date')) {
+                // Play the simple case. There is only one select in the fieldset.
+                log.debug("Selecting value in element name " + $(element).attr('name'));
+                var inputvalue = $(element).val();
+                log.debug("Input value is " + inputvalue);
+
+                var lastfsix = 0 + parseInt(nextfsix) - 1;
+                tdid = tdid.replace(/[0-9]+$/, '');
+                var lasttdid = tdid + lastfsix;
+                var targetinput = $('#' + lasttdid + ' select');
+                targetinput.val(inputvalue);
+            } else {
+                // Play the uggly case. the element is "one of" the three date components.
+                log.debug("Selecting value in element name " + $(element).attr('name'));
+                var inputvalue = $(element).val();
+                log.debug("Input value is " + inputvalue);
+
+                // Detect wich component we are.
+                var component;
+                if ($(element).attr('name').match('day$')) {
+                    component = 'day';
+                } else if ($(element).attr('name').match('month$')) {
+                    component = 'month';
+                } else {
+                    component = 'year';
+                }
+
+                var lastfsix = 0 + parseInt(nextfsix) - 1;
+                tdid = tdid.replace(/[0-9]+$/, '');
+                var lasttdid = tdid + lastfsix;
+                var targetinput = $('#' + lasttdid + ' select[name$="' + component +'"]'); // Get by "endsWith" filter.
+                targetinput.val(inputvalue);
+            }
         },
 
-        copy_check: function(jqfieldsetelm, nextfsix) {
-            var inputname = $(this).attr('name');
-            var inputchecked = $(this).attr('checked');
-            var lastfsix = nextfsix - 1;
-            inputname.replace(/\\d+$/, '');
-            inputname += lastfsix;
-            $('input[name="' + inputname + '"]', jqfieldsetelm).attr('checked', inputchecked);
+        copy_check: function(element, jqfieldsetelm, nextfsix) {
+            var tdid = $(element).closest('td').attr('id');
+            log.debug("Selecting value in element name " + $(element).attr('name'));
+            var inputchecked = $(element).attr('checked');
+
+            var lastfsix = 0 + parseInt(nextfsix) - 1;
+            tdid = tdid.replace(/[0-9]+$/, '');
+            var lasttdid = tdid + lastfsix;
+            var targetinput = $('#' + lasttdid + ' input[type="checkbox"]');
+            targetinput.attr('checked', inputchecked);
         },
 
-        copy_radio: function(jqfieldsetelm, nextfsix) {
-            var inputname = $(this).attr('name');
-            var inputchecked = $(this).attr('checked');
-            var lastfsix = nextfsix - 1;
-            inputname.replace(/\\d+$/, '');
-            inputname += lastfsix;
-            $('input[name="' + inputname + '"]', jqfieldsetelm).attr('checked', inputchecked);
+        copy_radio: function(element, jqfieldsetelm, nextfsix) {
+            var tdid = $(element).closest('td').attr('id');
+            log.debug("Selecting value in element name " + $(element).attr('name'));
+            var inputchecked = $(element).attr('checked');
+
+            var lastfsix = 0 + parseInt(nextfsix) - 1;
+            tdid = tdid.replace(/[0-9]+$/, '');
+            var lasttdid = tdid + lastfsix;
+            var targetinput = $('#' + lasttdid + ' input[type="radio"]');
+            targetinput.prop('checked', inputchecked).trigger('click');
         },
 
         publish: function(e) {
@@ -403,7 +486,7 @@ define(['jquery', 'core/log', 'core/config', 'block_data_cart/datacart'], functi
             e.stopPropagation();
             e.preventDefault();
 
-            var that, url, recordid;
+            var that, recordid;
             that = $(this);
             recordid = that.attr('data-recordid');
             datacart.add_record(recordid);
